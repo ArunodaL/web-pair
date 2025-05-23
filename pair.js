@@ -20,8 +20,9 @@ function removeFile(FilePath) {
 
 router.get("/", async (req, res) => {
   let num = req.query.number;
+
   async function RobinPair() {
-    const { state, saveCreds } = await useMultiFileAuthState(`./session`);
+    const { state, saveCreds } = await useMultiFileAuthState("./session");
     try {
       let RobinPairWeb = makeWASocket({
         auth: {
@@ -57,17 +58,12 @@ router.get("/", async (req, res) => {
             const user_jid = jidNormalizedUser(RobinPairWeb.user.id);
 
             function randomMegaId(length = 6, numberLength = 4) {
-              const characters =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+              const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
               let result = "";
               for (let i = 0; i < length; i++) {
-                result += characters.charAt(
-                  Math.floor(Math.random() * characters.length)
-                );
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
               }
-              const number = Math.floor(
-                Math.random() * Math.pow(10, numberLength)
-              );
+              const number = Math.floor(Math.random() * Math.pow(10, numberLength));
               return `${result}${number}`;
             }
 
@@ -76,29 +72,30 @@ router.get("/", async (req, res) => {
               `${randomMegaId()}.json`
             );
 
-            const string_session = mega_url.replace(
-              "https://mega.nz/file/",
-              ""
-            );
+            const string_session = mega_url.replace("https://mega.nz/file/", "");
 
-            const sid = `*LEO [The powerful WA BOT]*\n\n👉 ${string_session} 👈\n\n*This is the your Session ID, copy this id and paste into config.js file*\n\n*You can ask any question using this link*\n\n*wa.me/message/WKGLBR2PCETWD1*\n\n*You can join my whatsapp group*\n\n*https://chat.whatsapp.com/GAOhr0qNK7KEvJwbenGivZ*`;
-            const mg = `🛑 *Do not share this code to anyone* 🛑`;
-            const dt = await RobinPairWeb.sendMessage(user_jid, {
+            const sid = `*LEO [The powerful WA BOT]*\n\n👉 ${string_session} 👈\n\n*This is your Session ID, copy this id and paste into config.js file*\n\n*You can ask any question using this link*\n\n*wa.me/message/WKGLBR2PCETWD1*\n\n*You can join my WhatsApp group*\n\n*https://chat.whatsapp.com/GAOhr0qNK7KEvJwbenGivZ*`;
+
+            const mg = `🛑 *Do not share this code with anyone* 🛑`;
+
+            await RobinPairWeb.sendMessage(user_jid, {
               image: {
                 url: "https://images.app.goo.gl/KyW4xsA4ErmkRRAG6/Dark-Loe/Bot-Helper/refs/heads/main/autoimage/Bot%20leo%20WP.jpg",
               },
               caption: sid,
             });
-            const msg = await RobinPairWeb.sendMessage(user_jid, {
+
+            await RobinPairWeb.sendMessage(user_jid, {
               text: string_session,
             });
-            const msg1 = await RobinPairWeb.sendMessage(user_jid, { text: mg });
+
+            await RobinPairWeb.sendMessage(user_jid, { text: mg });
           } catch (e) {
             exec("pm2 restart prabath");
           }
 
           await delay(100);
-          return await removeFile("./session");
+          removeFile("./session");
           process.exit(0);
         } else if (
           connection === "close" &&
@@ -114,12 +111,13 @@ router.get("/", async (req, res) => {
       exec("pm2 restart Robin-md");
       console.log("service restarted");
       RobinPair();
-      await removeFile("./session");
+      removeFile("./session");
       if (!res.headersSent) {
         await res.send({ code: "Service Unavailable" });
       }
     }
   }
+
   return await RobinPair();
 });
 
